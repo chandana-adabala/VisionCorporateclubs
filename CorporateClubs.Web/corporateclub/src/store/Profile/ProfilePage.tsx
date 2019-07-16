@@ -19,34 +19,8 @@ import { FetchProfileDetails } from './Actions'
 import { PayloadType } from './Actions'
 import { connect } from 'react-redux';
 import { getToken } from '../../Configure'
+import Avatar from 'react-avatar';
 // import { Alert } from 'reactstrap';
-interface IProps {
-    userID: number,
-    displayName: string,
-    firstName: string,
-    middleName: string,
-    lastName: string,
-    mobileNumber: string,
-    email: string,
-    role: string,
-    address: string,
-    gender: string,
-    martialStatus: string,
-    bloodGroup: string,
-    dOB: Date,
-    loginCreated: Date,
-    lastSeen: Date,
-    about: string,
-    profSum: string,
-    profilePic: string,
-    isActive: boolean,
-    isContactHide: boolean,
-    isProfSumHide: boolean,
-    rowCreatedOn: Date,
-    rowCreatedBy: number,
-    rowDeletedBy: number
-
-}
 
 interface Istate {
     diplayprofile?: string
@@ -60,8 +34,8 @@ class Profile_Head extends React.Component<any, any>{
 
         this.state = {
             message: "",
-            error: ""
-
+            error: "",
+            activeButtons:{"About":true,"Clubs":false,"Favourites":false}
 
         };
 
@@ -74,20 +48,29 @@ class Profile_Head extends React.Component<any, any>{
     }
 
     componentDidMount() {
-         
+        debugger;
         this.props.dispatch(FetchProfileDetails());
 
     }
 
-    componentWillReceiveProps() {
+    componentWillReceiveProps(nextProps) {
         this.setState({ message: this.props.message, error: this.props.error })
         setTimeout(this.onDismiss, 4000);
+
+        //for activating tabs in profile page navigator
+        var url=nextProps.location.pathname;
+        var selectedTab=url.split('/')[2];
+        var activeButtons={"About":false,"Clubs":false,"Favourites":false}
+        if(selectedTab=='')
+        activeButtons.About=true;
+        else
+        activeButtons[selectedTab]=true;
+        this.setState({activeButtons})
+           
     }
 
 
     render() {
-        debugger;
-        console.log(getToken(), "usertoken");
         return (
             <div className="ProfilePage">
                 {/* <div className="alertWrapper">
@@ -101,7 +84,7 @@ class Profile_Head extends React.Component<any, any>{
                 <div id="info">
                     <div id="profile" className="component">
                         <Link to="/Profile/ChangeProfilePicture">
-                            <img id="image" src={this.props.profilePic} />
+        {(<Avatar size="5rem" name={this.props.displayName} style={{"margin":"auto","display":"block","margin-top":"20px"}} round={true}  src={this.props.profilePic}/>)}
                         </Link>
                     </div>
                     <div id="name" className="component" >
@@ -129,30 +112,37 @@ class Profile_Head extends React.Component<any, any>{
                     </div>
 
                     <div id="menu">
+                        <div className={this.state.activeButtons.About?"optionsActive":"options"}>
                         <Link to="/Profile/">About</Link>
-                        <Link to="/Profile/Club">Club</Link>
-                        <Link to="/Profile/About">Favourite</Link>
+                        </div>
+                        <div className={this.state.activeButtons.Clubs?"optionsActive":"options"}>
+                        <Link to="/Profile/Clubs">Clubs</Link>
+                        </div> 
+                         <div className={this.state.activeButtons.Favourites?"optionsActive":"options"}>
+                        <Link to="/Profile/Favourites">Favourites</Link>
+                        </div>
                     </div>
                 </div>
 
 
                 <Switch>
 
-                    <Route path="/Profile/Club" component={ClubsTable} />
-                    <Route path="/Profile/Favourite" component={FavouriteClubsTable} />
+                    <Route path="/Profile/Clubs" component={ClubsTable} />
+                    <Route path="/Profile/Favourites" component={FavouriteClubsTable} />
                     <Route path="/Profile/" component={About} />
                 </Switch>
-                <Route path="/Profile/ChangeProfilePicture" component={ChangeProfilePicture} />
+                <Route path="/Profile/ChangeProfilePicture" component={()=>{ return <ChangeProfilePicture profilePic={this.props.profilePic}/>}} />
 
             </div>
 
         );
+        
     }
 
 }
 
 function mapStateToProps(State) {
-     
+    debugger;
     return {
         error: State.ProfilePageReducer.error,
         message: State.ProfilePageReducer.message,

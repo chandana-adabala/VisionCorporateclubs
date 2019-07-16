@@ -5,20 +5,34 @@ const IntialState:PayloadType=
     LoggedUser:DefaultUser,
     message:"",
     error:"not mounted",
-    IsLoading:false,
+    isLoading:true,
 }
 
 export default function AppPageReducer(State=IntialState,Action:ActionReturnType):PayloadType
 {
+    debugger;
     switch(Action.type)
     {
         case ActionTypes.USER_EXIST:
             State.LoggedUser=Action.Payload.LoggedUser;
             State.error='';
             return {...State}
+
+
         case ActionTypes.USER_NOT_EXIST:
             State.error=Action.Payload.error;
             return {...State}
+
+
+        case ActionTypes.LOADING_STARTED:
+            State.isLoading=true
+            return {...State}
+
+
+        case ActionTypes.LOADING_ENDED:
+            State.isLoading=false
+            return {...State}
+
         default:
             return State
     }

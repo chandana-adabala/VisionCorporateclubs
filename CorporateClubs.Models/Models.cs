@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 
 namespace CorporateClubs.Models.Models
 {
@@ -13,25 +12,9 @@ namespace CorporateClubs.Models.Models
         public int count { get; set; }
     }
 
-    //conversation models
-
-    public class MessageSenderInfo
-    {
-        public int userID;
-        public int clubID;
-        public string message;
-        public DateTimeOffset postedOn;
-        public string userName;
-        public string profilePic;
-        public string[] attachmentUrls;
-        public string[] attachmentNames;
-
-    }
-
-
-
-
     //user modals
+
+
 
 
     public class userTypechangeReason
@@ -190,6 +173,25 @@ namespace CorporateClubs.Models.Models
         public DateTime RowDeletedOn { get; set; }//2-11-2019 12:00:02AM
         public int? RowDeletedBy { get; set; }// existing user id
 
+    }
+    public class FrontEndContacts
+    {
+        public int UserID { get; set; }// Existing user id
+        public int ConnectedUserID { get; set; }// Existing user id
+        public DateTime ConnectedDate { get; set; }//2-11-2019 12:00:02AM
+        public bool IsFavourite { get; set; }// 1 or 0
+        public bool IsBlock { get; set; }// 1 or 0
+        public bool IsRequested { get; set; }// 1 or 0
+        public bool IsMute { get; set; }// 1 or 0
+        public string ProfilePic { get; set; }//..
+        public string Email { get; set; }//abc@outlook.com
+        public string MobileNumber { get; set; }//+917988967890
+        public int MutualClubs { get; set; } //number
+        public int MutualFriends { get; set; }//number
+        public string DisplayName { get; set; }//giraffi_2
+        public string About { get; set; }// I am happy
+        public string Role { get; set; }// Admin,User
+        public bool IsActive { get; set; }// 1 or 0
     }
 }
 

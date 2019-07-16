@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using MySql.Data.EntityFrameworkCore.DataAnnotations;
 
 namespace CorporateClubs.Services.Models
 {
     public class Conversation
     {
         [Key]
+        [Timestamp]
         [Column(Order =1)]
-        public DateTimeOffset PostedOn { get; set; }
+        public byte[] Timestamp { get; set; }
 
         [Key]
         [Column(Order = 2)]
@@ -22,18 +22,16 @@ namespace CorporateClubs.Services.Models
         [Column(Order = 3)]
         public int ClubID { get; set; }
     
-        
-        [MySqlCharset("utf8")]
+        [Column(TypeName = "text")]
         public string Message { get; set; }
-        
-        public string AttachmentUrls { get; set; }
-        public string AttachmentNames { get; set; }
+        [Url(ErrorMessage ="Invalid Field")]
+        public string Attachment { get; set; }
 
-        public DateTime? RowCreatedOn { get; set; }//2-11-2019 12:00:02AM
+        public DateTime RowCreatedOn { get; set; }//2-11-2019 12:00:02AM
         public int? RowCreatedBy { get; set; }// existing user id
-        public DateTime? RowModifiedOn { get; set; }//2-11-2019 12:00:02AM
+        public DateTime RowModifiedOn { get; set; }//2-11-2019 12:00:02AM
         public int? RowModifiedBy { get; set; }// existing user id
-        public DateTime? RowDeletedOn { get; set; }//2-11-2019 12:00:02AM
+        public DateTime RowDeletedOn { get; set; }//2-11-2019 12:00:02AM
         public int? RowDeletedBy { get; set; }// existing user id
 
     }

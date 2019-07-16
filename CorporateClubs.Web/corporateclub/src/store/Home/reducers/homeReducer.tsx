@@ -1,7 +1,7 @@
-import {ActionTypes} from '../actions/homeActions';
+import {ActionTypes} from '../actions/clubAction';
 import IClubs from '../../../models/IClubs';
 import IUsers from '../../../models/IUsers';
-import IConversation from '../../../models/IConversation';
+import { ActionsTypes } from '../../Profile/Actions';
 
 export interface Istate {
     myclubs:IClubs[],
@@ -10,8 +10,7 @@ export interface Istate {
     cUsers:IUsers[],
     rUsers:IUsers[],
     nUsers:IUsers[],
-    users:IUsers[],
-    messages:IConversation[]
+    users:IUsers[]
 }
 
 const initialState:Istate ={
@@ -33,8 +32,7 @@ const initialState:Istate ={
     cUsers:[],
     rUsers:[],
     users:[],
-    nUsers:[],
-    messages:[]
+    nUsers:[]
 
     
 }
@@ -55,7 +53,6 @@ export default function homeReducer(state=initialState,action:any){
                     myclubs:action.payload
                 }
         case ActionTypes.CLUBINFO_FETCH_SUCCESS:
-             
                 console.log("fetch club info success",action);
                 return{
                    ...state,
@@ -95,15 +92,14 @@ export default function homeReducer(state=initialState,action:any){
                         return{
                             ...state,
                         }
-        case ActionTypes.FETCH_MESSAGES_SUCCESS:
-             
-                        console.log("fetch all messages success");
-                        return{
-                            ...state,
-                           messages:action.payload
-                        }
-                        
-                        
+        case ActionTypes.REMOVE_USER_AS_ADMIN_SUCCESS:
+            return state
+        case ActionTypes.REMOVE_USER_AS_ADMIN_FAILED:
+            return state
+        case ActionTypes.BLOCK_OR_UNBLOCK_USER_SUCCESS:
+            return state
+        case ActionTypes.BLOCK_OR_UNBLOCK_USER_FAILED:
+            return state
         default:
             return state;
     }

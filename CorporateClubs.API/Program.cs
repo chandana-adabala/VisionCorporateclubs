@@ -19,7 +19,7 @@ namespace CorporateClubs.API
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseWebRoot("wwwroot")
+            .UseWebRoot("wwwroot//images")
                 .UseStartup<Startup>();
     }
 }

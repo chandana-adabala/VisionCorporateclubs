@@ -4,6 +4,10 @@ import IClubMembers from '../../../models/IClubMembers'
 import Club from '../Club';
 import IClubMembersList from '../../../models/IClubMembersList'
 import INewClub from '../../../models/INewClub'
+import {getToken} from '../../../Configure'
+import axios from 'axios'
+import {loadingStarted,loadingEnded} from '../../../App/AppActions/AppActions'
+const url="http://localhost:3333/"
 export enum Actions
 {
     ADD_CLUB='ADD_CLUB',
@@ -27,7 +31,9 @@ export enum Actions
     FETCH_CLUB_MEMBERS_LIST='FETCH_CLUB_MEMBERS_LIST',
     REQUEST_CHANGED='REQUEST_CHANGED',
     USER_DELETED='USER_DELETED',
-    USER_ADDED='USER_ADDED'
+    USER_ADDED='USER_ADDED',
+    DEACTIVATE_CLUB_SUCCESS='DEACTIVATE_CLUB_SUCCESS',
+    FILTRATION_SUCCESS='FILTRATION_SUCCESS'
 
 }
 export interface PayLoad
@@ -40,6 +46,7 @@ export interface PayLoad
     isLoading?:Boolean
     clubMembersList?:IClubMembersList[],
     message?:string
+    filteredClubMembersList?:IClubMembersList[]
 
 
 }
@@ -54,96 +61,16 @@ export interface ActionReturnType
     type:Actions,
     payload:PayLoad,
 }
-function AddClub(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.ADD_CLUB,
-        payload:payload,
-    }
-}
-function SortByClubType(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.SORT_BY_CLUB_TYPE,
-        payload:payload,
-    }
-}
-function SortByStatus(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.SORT_BY_STATUS,
-        payload:payload,
-    }
-}
-function SortByDate(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.SORT_BY_DATE,
-        payload:payload,
-    }
-}
-function SearchClubs(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.SEARCH_CLUBS,
-        payload:payload,
-    }
-}
-function ResetClubs(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.RESET_CLUBS,
-        payload:payload,
-    }
-}
-function DisplayClubs(payload:IClubs[]):ActionReturnType{
-    return{
-        type:Actions.DISPLAY_CLUBS,
-        payload:{clubs:payload},
-    }
-}
-function ReportClub(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.REPORT_CLUB,
-        payload:payload,
-    }
-}
-function DeactivateClub(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.DEACTIVATE_CLUB,
-        payload:payload,
-    }
-}
-function ReactivateClub(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.REACTIVATE_CLUB,
-        payload:payload,
-    }
-}
-function RequestJoin(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.REQUEST_JOIN,
-        payload:payload,
-    }
-}
-function CancelRequest(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.CANCEL_REQUEST,
-        payload:payload,
-    }
-}
-function Join(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.JOIN,
-        payload:payload,
-    }
-}
+
+
+
 function FetchFailed(payload:PayLoad):ActionReturnType{
     return{
         type:Actions.FETCH_FAILED,
         payload:payload,
     }
 }
-function FetchStarted(payload:PayLoad):ActionReturnType{
-    return{
-        type:Actions.FETCH_STARTED,
-        payload:payload,
-    }
-}
+
 function DetailsOfUser(payload:IUsers[]):ActionReturnType{
     return{
         type:Actions.DETAILS_OF_USER,
@@ -156,10 +83,10 @@ function DetailsOfMembers(payload:IClubMembers[]):ActionReturnType{
         payload:{members:payload},
     }
 }
-function RequestsOfClub(payload:IClubMembers[]):ActionReturnType{
+function deactivateSuccess(payload:string):ActionReturnType{
     return{
         type:Actions.REQUESTS_OF_CLUB,
-        payload:{requests:payload},
+        payload:{message:payload},
     }
 }
 
@@ -203,31 +130,23 @@ function clubAdded(payload:string):ActionReturnType
     }
 }
 
-
-export const FetchClubs = UserID=>{
-     
-    return function(dispatch){
-        console.log("fetch call");
-        return fetch('http://localhost:64412/api/clubs/getallclubs/'+UserID)
-        .then(data => data.json())
-        .then(data =>{
-            if(data.message === "Not Found"){
-                throw new Error("User Not Found!");
-            }else{
-                console.log(data);
-                dispatch(DisplayClubs(data));
-            }
-        })
-        .catch(error=>dispatch(FetchFailed(error)))
-
+function filtrationSuccess(payload:IClubMembersList[]):ActionReturnType
+{
+    return{
+        type:Actions.FILTRATION_SUCCESS,
+        payload:{filteredClubMembersList:payload}
     }
 }
+
+
 export const FetchUsers =()=>{
-     
+    debugger;
+    const headers = { 'Authorization': 'Bearer ' + getToken() };
     return function(dispatch){
-         
+        debugger;
+        dispatch(loadingStarted())
         console.log("fetch call");
-        return fetch('http://localhost:64412/api/Users/GetAllUsers/2')
+        return fetch(url+'api/Users/GetAllUsers',{headers:headers})
         .then(data => data.json())
         .then(data =>{
             if(data.message === "Not Found"){
@@ -235,18 +154,21 @@ export const FetchUsers =()=>{
             }else{
                 console.log(data);
                 dispatch(DetailsOfUser(data));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
 
     }
 }
 export const FetchMembers =()=>{
-     
+    debugger;
+    const headers = { 'Authorization': 'Bearer ' + getToken() };
     return function(dispatch){
-         
+        debugger;
+        dispatch(loadingStarted())
         console.log("fetch call");
-        return fetch('http://localhost:64412/api/clubs/getallclubsofusers/2/2')
+        return fetch(url+'api/clubs/getallclubsofusers',{headers:headers})
         .then(data => data.json())
         .then(data =>{
             if(data.message === "Not Found"){
@@ -254,39 +176,23 @@ export const FetchMembers =()=>{
             }else{
                 console.log(data);
                 dispatch(DetailsOfMembers(data));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
 
     }
 }
-export const FetchRequests =ClubID=>{
-     
-    return function(dispatch){
-         
-        console.log("fetch call");
-        return fetch('http://localhost:64412/api/clubs/getallrequestedmembers/2/'+ClubID)
-        .then(data => data.json())
-        .then(data =>{
-            if(data.message === "Not Found"){
-                throw new Error("Request Not Found!");
-            }else{
-                console.log(data);
-            
-                dispatch(RequestsOfClub(data));
-            }
-        })
-        .catch(error=>dispatch(FetchFailed(error)))
 
-    }
-}
 
 export const FetchClubMembersList =()=>{
-     
+    debugger;
     return function(dispatch){
-         
+        debugger;
+        dispatch(loadingStarted())
+        const headers = { 'Authorization': 'Bearer ' + getToken() };
         console.log("fetch call");
-        return fetch('http://localhost:64412/api/clubs/getclubmemberslist/2')
+        return fetch(url+'api/clubs/getclubmemberslist',{headers:headers})
         .then(data => data.json())
         .then(data =>{
             if(data.message === "Not Found"){
@@ -294,84 +200,190 @@ export const FetchClubMembersList =()=>{
             }else{
                 console.log(data);
                 dispatch(clubMembersListFetch(data));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
-
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
     }
 }
 
-export const makeAndCancelRequest=(requestID,clubID,userID)=>
+export const makeAndCancelRequest=(clubID,userID)=>
 {
-     
+    debugger;
     return function(dispatch){
-         
-        return fetch('http://localhost:64412/api/clubs/MakeNCancelRequest/'+requestID+'/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json'}})
+        debugger;
+        dispatch(loadingStarted())
+        return fetch(url+'api/clubs/MakeNCancelRequest/'+'/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json','Authorization': 'Bearer ' + getToken()}})
         .then(response =>{
             if(!response.ok){
                 throw new Error("User Not Found!");
             }else{
                 console.log(response.status);
                 dispatch(requestChanged(response.statusText));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
     }
 }
 
 
-export const removeUser=(requestID,clubID,userID)=>
+export const removeUser=(clubID,userID)=>
 {
-     
+    debugger;
     return function(dispatch){
-         
-        return fetch('http://localhost:64412/api/clubs/removeuser/'+requestID+'/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json'}})
+        debugger;
+        dispatch(loadingStarted())
+        return fetch(url+'api/clubs/removeuser/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json','Authorization': 'Bearer ' + getToken()}})
         .then(response =>{
             if(!response.ok){
                 throw new Error("User Not Found!");
             }else{
                 console.log(response.status);
                 dispatch(userDeleted(response.statusText));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
     }
 }
 
-export const addUserToPublicClub=(requestID,clubID,userID)=>
+export const addUserToPublicClub=(clubID,userID)=>
 {
-     
-    console.log('http://localhost:64412/api/clubs/addUserToPublicClub/'+requestID+'/'+clubID+'/'+userID, "HERo")
+    debugger;
     return function(dispatch){
-         
-        return fetch('http://localhost:64412/api/clubs/addUserToPublicClub/'+requestID+'/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json'}})
+        debugger;
+        dispatch(loadingStarted())
+        return fetch(url+'api/clubs/addUserToPublicClub/'+clubID+'/'+userID,{method:"put",headers:{'Content-Type': 'application/json','Authorization': 'Bearer ' + getToken()}})
         .then(response =>{
             if(!response.ok){
                 throw new Error("User Not Found!");
             }else{
                 console.log(response.status);
                 dispatch(userAdded(response.statusText));
+                dispatch(loadingEnded())
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
     }
 }
 
-export function addClub(user,newClub:INewClub)
+export function addClub(newClub:INewClub,formData:FormData)
 {
-     
+    debugger;
     return function(dispatch){
-         
-         console.log(JSON.stringify(user));
-        return fetch('http://localhost:64412/api/clubs/addclub/'+user,{method:"post",body:JSON.stringify(newClub),headers:{'Content-Type': 'application/json'}})
-        .then(response =>{
-            if(!response.ok){
-                throw new Error("user added failed");
+        debugger;
+        dispatch(loadingStarted())
+        return fetch(url+'api/clubs/addclub',{method:"post",body:JSON.stringify(newClub),headers:{'Content-Type': 'application/json','Authorization': 'Bearer ' + getToken()}})
+        .then(data => data.json())
+        .then(data =>{
+            if(data.message === "Not Found"){
+                throw new Error("User Not Found!");
             }else{
-                console.log(response.status);
-                dispatch(clubAdded(response.statusText));
+                axios.post('http://localhost:3333/api/clubs/UploadImage/'+data,
+                formData, { headers: { 'Content-Type': "multipart/form-data",'Authorization': 'Bearer ' + getToken()}})
+                .then(res => {
+                    dispatch(clubAdded(res.statusText));
+                    dispatch(loadingEnded())
+                })
             }
         })
-        .catch(error=>dispatch(FetchFailed(error)))
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
+    //     .then(response =>{
+    //         if(!response.ok){
+    //             throw new Error("user added failed");
+    //         }else{
+    //             console.log(response.status);
+    //             // axios.post('http://localhost:3333/api/clubs/UploadImage/7',
+    //             // formData, { headers: { 'Content-Type': "multipart/form-data" } })
+    //             // .then(res => {
+    //             //   console.log(res);
+    //             // })
+    //             var a=response.json()
+    //             console.log(response.json())
+    //             dispatch(clubAdded(response.statusText));
+    //         }
+    //     })
+    //     .catch(error=>dispatch(FetchFailed(error)))
+    // }
+}
+}
+
+export function deactivateClub(clubID:number,reason:string)
+{
+    debugger;
+    return function(dispatch){
+        debugger;
+        dispatch(loadingStarted())
+        return fetch(url+'api/clubs/makeclubdeactive/'+clubID,{method:"put",headers:{'Content-Type': 'application/json','Authorization': 'Bearer ' + getToken()}})
+        .then(response =>{
+            if(!response.ok){
+                throw new Error("FetchFailed!");
+            }else{
+                console.log(response.status);
+                dispatch(deactivateSuccess(response.statusText));
+                dispatch(loadingEnded())
+            }
+        })
+        .catch(error=>{dispatch(FetchFailed(error));dispatch(loadingEnded())})
     }
 }
+
+
+export function filterClub(clubType:string[],status:string[],date:Date|null,searchBar:string,clubs)
+{
+    return function(dispatch)
+    {
+   function  myFilter(clubRow)
+    {
+         var i=0,j=0;
+         if(clubRow.clubs.clubDeactiveBy==null)
+         clubRow.clubs.clubDeactiveBy="Inactive";
+         else
+         clubRow.clubs.clubDeactiveBy="Active";
+         if(date==null)
+         var date_check=new Date(clubRow.clubs.createdOn);
+         else
+         var date_check=date;
+
+
+
+         for(i=0;i<clubType.length;i++)
+         {
+             for(j=0;j<status.length;j++)
+             {
+                if(clubRow.clubs.clubType==clubType[i]&&clubRow.clubs.clubDeactiveBy==status[j]&&clubRow.clubs.clubTitle.toLowerCase().includes(searchBar)&&new Date(clubRow.clubs.createdOn).toDateString()==date_check.toDateString())
+                return true;
+             }
+         }
+        //clubType is not selected in the filter
+         if(clubType.length==0)
+         for(i=0;i<status.length;i++)
+         {
+            if(clubRow.clubs.clubDeactiveBy==status[i]&&clubRow.clubs.clubTitle.toLowerCase().includes(searchBar)&&new Date(clubRow.clubs.createdOn).toDateString()==date_check.toDateString())
+            return true;
+         }
+          
+        //status is not selected in the filter
+        if(status.length==0)
+        for(i=0;i<clubType.length;i++)
+        {
+            if(clubRow.clubs.clubType==clubType[i]&&clubRow.clubs.clubTitle.toLowerCase().includes(searchBar)&&new Date(clubRow.clubs.createdOn).toDateString()==date_check.toDateString())
+            return true;
+        }
+        //if both status and clubType are not selected in the filter
+        if(clubType.length==0&&status.length==0)
+        if(clubRow.clubs.clubTitle.toLowerCase().includes(searchBar)&&new Date(clubRow.clubs.createdOn).toDateString()==date_check.toDateString())
+            return true;
+        return false;
+
+
+    }
+
+    var filteredclubs=clubs.filter(myFilter);
+    dispatch(filtrationSuccess(filteredclubs));
+    
+}
+}
+
+

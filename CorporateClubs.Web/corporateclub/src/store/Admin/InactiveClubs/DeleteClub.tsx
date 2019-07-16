@@ -1,5 +1,5 @@
 import React from 'react';
-import '../DeactivateorActivateUser.scss';
+import '../UsersList/DeactivateorActivateUser.scss';
 import { Icon } from 'react-icons-kit'
 import {ic_close} from 'react-icons-kit/md/ic_close'
 import {BrowserRouter as Router,Switch,Route,Link} from 'react-router-dom';
@@ -21,7 +21,7 @@ class DeleteClub extends React.Component<any,any> {
     }
     reasonHandle(event)
     {
-         
+        debugger;
         var Reason=event.target.value;
         this.setState({reason:Reason})
     }   
@@ -30,7 +30,7 @@ class DeleteClub extends React.Component<any,any> {
 
     confirmButtonHandle(event)
     {
-         
+        debugger;
         this.props.dispatch(deleteClub(this.props.clubID,this.state.reason));
     }
     

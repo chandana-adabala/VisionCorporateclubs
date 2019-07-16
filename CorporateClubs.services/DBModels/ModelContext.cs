@@ -21,9 +21,8 @@ namespace CorporateClubs.Services.Models
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("C:\\Users\\chandana.a\\source\\repos\\VisionCorporateClubs\\Corporate-Clubs\\CorporateClubs.services\\appsettings.json")
+            .AddJsonFile("C:\\Users\\ramgirish.k\\copy of newrepo\\Corporate-Clubs\\CorporateClubs.services\\appsettings.json")
             .Build();
-            //\source\repos\VisionCorporateClubs\Corporate-Clubs\CorporateClubs.services\appsettings.json
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("CorporateClubsDB"));
         }
 
@@ -36,7 +35,7 @@ namespace CorporateClubs.Services.Models
                 .HasKey(o => new { o.UserID, o.ConnectedUserID })
                 ;
             modelBuilder.Entity<Conversation>()
-                .HasKey(o => new { o.PostedOn, o.ClubID, o.UserID })
+                .HasKey(o => new { o.Timestamp, o.ClubID, o.UserID })
                 ;
 
             modelBuilder.Entity<Conversation>()
@@ -76,7 +75,7 @@ namespace CorporateClubs.Services.Models
 
 
             modelBuilder.Entity<Conversation>()
-                .Property(p => p.PostedOn)
+                .Property(p => p.Timestamp)
                 .ValueGeneratedOnAdd()
                 ;
 

@@ -2,7 +2,7 @@ import {ActionReturnType,ActionsTypes} from './Actions'
 import {PayloadType} from './Actions'
 import {DefaultUser} from '../../models/IUsers'
 import {DefaultClub} from '../../models/IClubs'
-import { ActionTypes } from '../Home/actions/homeActions';
+import { ActionTypes } from '../Home/actions/clubAction';
 const IntialState:PayloadType=
 {
     User:DefaultUser,
@@ -11,6 +11,7 @@ const IntialState:PayloadType=
     message:"",
     error:"",
     IsLoading:false,
+    Users:[]
 
 
 
@@ -19,6 +20,7 @@ const IntialState:PayloadType=
 
 export default function ProfilePageReducer(State=IntialState,Action:ActionReturnType):PayloadType
 {
+    debugger;
     switch(Action.type)
     {
         case ActionsTypes.FetchProfileDetails:
@@ -31,7 +33,7 @@ export default function ProfilePageReducer(State=IntialState,Action:ActionReturn
             State.IsLoading=false
             return {...State}
 
-        case ActionsTypes.FetchClubDetails:
+        case ActionsTypes.FetchFavouriteClubs:
                 State.FavClubs=Action.Payload.FavClubs
                 State.IsLoading=false
                 return {...State}
@@ -49,7 +51,9 @@ export default function ProfilePageReducer(State=IntialState,Action:ActionReturn
             State.error="updation failed"
             return {...State}
        // case ActionTypes.RemoveMessages:
-
+        case ActionsTypes.FetchAllUsers:
+            State.Users=Action.Payload.Users
+            return {...State}
             
         default:
             return State

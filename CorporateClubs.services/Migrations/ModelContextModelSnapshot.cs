@@ -54,11 +54,11 @@ namespace CorporateClubs.services.Migrations
 
                     b.Property<int?>("RowDeletedBy");
 
-                    b.Property<DateTime?>("RowDeletedOn");
+                    b.Property<DateTime>("RowDeletedOn");
 
                     b.Property<int?>("RowModifiedBy");
 
-                    b.Property<DateTime?>("RowModifiedOn");
+                    b.Property<DateTime>("RowModifiedOn");
 
                     b.HasKey("ClubID");
 
@@ -102,11 +102,11 @@ namespace CorporateClubs.services.Migrations
 
                     b.Property<int?>("RowDeletedBy");
 
-                    b.Property<DateTime?>("RowDeletedOn");
+                    b.Property<DateTime>("RowDeletedOn");
 
                     b.Property<int?>("RowModifiedBy");
 
-                    b.Property<DateTime?>("RowModifiedOn");
+                    b.Property<DateTime>("RowModifiedOn");
 
                     b.HasKey("ClubID", "UserID");
 
@@ -143,11 +143,11 @@ namespace CorporateClubs.services.Migrations
 
                     b.Property<int?>("RowDeletedBy");
 
-                    b.Property<DateTime?>("RowDeletedOn");
+                    b.Property<DateTime>("RowDeletedOn");
 
                     b.Property<int?>("RowModifiedBy");
 
-                    b.Property<DateTime?>("RowModifiedOn");
+                    b.Property<DateTime>("RowModifiedOn");
 
                     b.HasKey("UserID", "ConnectedUserID");
 
@@ -164,34 +164,34 @@ namespace CorporateClubs.services.Migrations
 
             modelBuilder.Entity("CorporateClubs.Services.Models.Conversation", b =>
                 {
-                    b.Property<DateTimeOffset>("PostedOn")
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("ClubID");
 
                     b.Property<int>("UserID");
 
-                    b.Property<string>("AttachmentNames");
+                    b.Property<string>("Attachment");
 
-                    b.Property<string>("AttachmentUrls");
-
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
 
                     b.Property<int?>("RowCreatedBy");
 
-                    b.Property<DateTime?>("RowCreatedOn");
+                    b.Property<DateTime>("RowCreatedOn");
 
                     b.Property<int?>("RowDeletedBy");
 
-                    b.Property<DateTime?>("RowDeletedOn");
+                    b.Property<DateTime>("RowDeletedOn");
 
                     b.Property<int?>("RowModifiedBy");
 
-                    b.Property<DateTime?>("RowModifiedOn");
+                    b.Property<DateTime>("RowModifiedOn");
 
-                    b.HasKey("PostedOn", "ClubID", "UserID");
+                    b.HasKey("Timestamp", "ClubID", "UserID");
 
-                    b.HasAlternateKey("ClubID", "PostedOn", "UserID");
+                    b.HasAlternateKey("ClubID", "Timestamp", "UserID");
 
                     b.HasIndex("RowCreatedBy");
 
@@ -272,11 +272,7 @@ namespace CorporateClubs.services.Migrations
 
                     b.Property<int?>("RowDeletedBy");
 
-                    b.Property<DateTime?>("RowDeletedOn");
-
                     b.Property<int?>("RowModifiedBy");
-
-                    b.Property<DateTime?>("RowModifiedOn");
 
                     b.HasKey("UserID");
 
