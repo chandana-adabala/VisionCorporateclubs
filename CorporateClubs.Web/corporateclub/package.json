@@ -19,7 +19,7 @@
     "node-sass": "^4.12.0",
     "office-ui-fabric-react": "^7.0.2",
     "react": "^16.8.6",
-    "react-adal": "^0.4.23",
+    "react-adal": "^0.5.1",
     "react-avatar-edit": "^0.8.3",
     "react-avatar-editor": "^11.0.7",
     "react-bootstrap-dropdown-menu": "^1.1.15",
